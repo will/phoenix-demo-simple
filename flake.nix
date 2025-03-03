@@ -12,9 +12,9 @@
           (system: function nixpkgs.legacyPackages.${system});
     in
     {
-      # packages = forAllSystems (pkgs: {
-      #   default = pkgs.callPackage ./package.nix {};
-      # });
+      packages = forAllSystems (pkgs: {
+        default = pkgs.writeScriptBin "app" ("#!${addGems pkgs.ruby}/bin/ruby\n" + builtins.readFile ./app.rb);
+      });
 
       devShells = forAllSystems (pkgs: {
         default = pkgs.mkShell { packages = [ (addGems pkgs.ruby) ]; };
