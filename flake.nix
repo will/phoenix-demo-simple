@@ -35,7 +35,7 @@
                   Type = "simple";
                   ExecStartPre = [ "${pkgs.coreutils}/bin/ln -sf ${lib.getBin packages.aarch64-linux.default}/bin/app /run/app/app" ];
                   ExecStart = "/run/app/app";
-                  Environment = [ "PORT=80" ];
+                  Environment = [ "PORT=80" "APP_ENV=production" ];
                   KillMode = "mixed";
                   # SuccessExitStatus = "143";
                   Restart = "always";
