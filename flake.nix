@@ -24,7 +24,7 @@
         modules = [
           ({ pkgs, lib, ... }:
             {
-              system = "aarch64-linux";
+              nixpkgs.hostPlatform = "aarch64-linux";
               boot.isContainer = true;
               networking.firewall.allowedTCPPorts = [ 80 ];
               systemd.services.app = {
@@ -33,7 +33,7 @@
                 wantedBy = [ "multi-user.target" ];
                 serviceConfig = {
                   Type = "simple";
-                  ExecStartPre = [ "${pkgs.coreutils}/bin/ln -sf ${lib.getBin packages.aarch64-darwin.default}/bin/app /run/app/app" ];
+                  ExecStartPre = [ "${pkgs.coreutils}/bin/ln -sf ${lib.getBin packages.aarch64-linux.default}/bin/app /run/app/app" ];
                   ExecStart = "/run/app/app";
                   Environment = [ "PORT=80" ];
                   KillMode = "mixed";
