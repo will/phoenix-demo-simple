@@ -26,6 +26,7 @@
             {
               nixpkgs.hostPlatform = "aarch64-linux";
               boot.isContainer = true;
+              networking.nftables.enable = true;
               networking.firewall.allowedTCPPorts = [ 80 ];
               systemd.services.app = {
                 description = "App";
@@ -33,14 +34,11 @@
                 wantedBy = [ "multi-user.target" ];
                 serviceConfig = {
                   Type = "simple";
-                  ExecStartPre = [ "${pkgs.coreutils}/bin/ln -sf ${lib.getBin packages.aarch64-linux.default}/bin/app /run/app/app" ];
-                  ExecStart = "/run/app/app";
+                  ExecStart = [ "${lib.getBin packages.aarch64-linux.default}/bin/app" ];
                   Environment = [ "PORT=80" "APP_ENV=production" ];
                   KillMode = "mixed";
-                  # SuccessExitStatus = "143";
                   Restart = "always";
-                  RuntimeDirectory = "hawk";
-                };
+                  RuntimeDirectory = "hawk";};
               };
             })
         ];
