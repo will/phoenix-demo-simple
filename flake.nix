@@ -17,28 +17,32 @@
       });
 
       devShells = forAllSystems (pkgs: {
-        default = pkgs.mkShell { packages = [ (addGems pkgs.ruby) ]; };
+        default = pkgs.mkShell { packages = with pkgs; [ (addGems ruby) nixpkgs-fmt ]; };
       });
 
-      nixosConfigurations.nixos = nixpkgs.lib.nixosSystem {
+      nixosConfigurations.container = nixpkgs.lib.nixosSystem {
         modules = [
-          ({ pkgs, lib, ... }:
+          {
+            nixpkgs.hostPlatform = "aarch64-linux";
+            boot.isContainer = true;
+            networking.nftables.enable = true;
+            networking.firewall.allowedTCPPorts = [ 80 ];
+          }
+
+          ({ pkgs, ... }:
             {
-              nixpkgs.hostPlatform = "aarch64-linux";
-              boot.isContainer = true;
-              networking.nftables.enable = true;
-              networking.firewall.allowedTCPPorts = [ 80 ];
               systemd.services.app = {
                 description = "App";
                 after = [ "network.target" ];
                 wantedBy = [ "multi-user.target" ];
                 serviceConfig = {
                   Type = "simple";
-                  ExecStart = [ "${lib.getBin packages.aarch64-linux.default}/bin/app" ];
+                  ExecStart = [ "${packages.aarch64-linux.default}/bin/app" ];
                   Environment = [ "PORT=80" "APP_ENV=production" ];
                   KillMode = "mixed";
                   Restart = "always";
-                  RuntimeDirectory = "hawk";};
+                  RuntimeDirectory = "hawk";
+                };
               };
             })
         ];
